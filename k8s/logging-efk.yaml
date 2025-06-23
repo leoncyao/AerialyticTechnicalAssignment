@@ -1,0 +1,103 @@
+# Elasticsearch
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+        env:
+        - name: discovery.type
+          value: single-node
+        ports:
+        - containerPort: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-service
+spec:
+  ports:
+    - port: 9200
+      targetPort: 9200
+  selector:
+    app: elasticsearch
+---
+# Kibana
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:7.17.0
+        env:
+        - name: ELASTICSEARCH_HOSTS
+          value: "http://elasticsearch-service:9200"
+        ports:
+        - containerPort: 5601
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-service
+spec:
+  ports:
+    - port: 5601
+      targetPort: 5601
+  selector:
+    app: kibana
+---
+# Fluentd
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd
+spec:
+  selector:
+    matchLabels:
+      app: fluentd
+  template:
+    metadata:
+      labels:
+        app: fluentd
+    spec:
+      containers:
+      - name: fluentd
+        image: fluent/fluentd-kubernetes-daemonset:v1.16.2-debian-elasticsearch7-1.0
+        env:
+        - name: FLUENT_ELASTICSEARCH_HOST
+          value: "elasticsearch-service"
+        - name: FLUENT_ELASTICSEARCH_PORT
+          value: "9200"
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 100m
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log 

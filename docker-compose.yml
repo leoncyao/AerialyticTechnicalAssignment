@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8001:8000"
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=your-secret-key-here-change-in-production
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend
+    volumes:
+      - ./backend:/app
+    networks:
+      - solar-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - solar-network
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+
+networks:
+  solar-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 

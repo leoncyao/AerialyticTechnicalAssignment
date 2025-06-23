@@ -1,0 +1,85 @@
+# Default values for solar-panel-calculator
+replicaCount:
+  backend: 2
+  frontend: 2
+
+image:
+  backend:
+    repository: solar-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: solar-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+    - host: solar.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+        - path: /api/
+          pathType: Prefix
+  tls: []
+
+resources:
+  backend:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  frontend:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+config:
+  debug: false
+  allowedHosts: "solar-backend,solar-frontend"
+  reactAppApiUrl: "http://solar-backend-service"
+
+secrets:
+  secretKey: "your-secret-key-here-change-in-production" 
