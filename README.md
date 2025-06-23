@@ -204,14 +204,15 @@ kubectl apply -f k8s/configmap.yaml
 4. **No Terrain Data**: Does not account for elevation or complex terrain
 5. **Limited Validation**: Basic coordinate validation only
 
-### Future Enhancements
-1. **Weather Integration**: Real-time weather data for more accurate calculations
-2. **Shading Analysis**: 3D modeling of surrounding structures
-3. **Terrain Modeling**: Elevation data integration
-4. **Dynamic Horizon**: Complex terrain horizon modeling
-5. **PV Simulation**: Detailed system modeling with specific panel types
-6. **Historical Data**: Solar radiation historical analysis
-7. **Economic Analysis**: ROI calculations and payback periods
+### Features for a Production Version
+The following features were omitted for brevity but are recommended for a production-grade application:
+1. **Integration with Weather Data**: Instead of a clear-sky model, a production system should use Typical Meteorological Year (TMY) data from sources like NREL to provide a more realistic annual energy estimate by accounting for local weather patterns and cloud cover.
+2. **3D Shading and Obstruction Analysis**: The current model does not account for shading from nearby buildings, trees, or other obstructions. A production version should incorporate 3D modeling to calculate energy losses due to shading, which is a critical factor for accurate site assessment.
+3. **Detailed Photovoltaic (PV) System Modeling**: The model uses a single efficiency factor. A production tool would allow users to select specific PV modules and inverters from a library, using their detailed technical specifications (e.g., temperature coefficients, degradation rates) to simulate performance more accurately.
+4. **Economic and ROI Analysis**: A key feature for users is understanding the financial viability of a solar installation. This would include calculating the Levelized Cost of Energy (LCOE), payback period, and Return on Investment (ROI), factoring in system costs, local electricity prices, and government incentives.
+5. **User Accounts and Project Management**: A commercial application would require user authentication to allow users to save, manage, and compare different solar projects and design scenarios.
+6. **Robust Infrastructure and CI/CD**: While the project is containerized, a production deployment would necessitate a robust database (e.g., managed PostgreSQL), a full CI/CD pipeline for automated testing and deployment, and comprehensive monitoring and alerting.
+7. **Interactive Map Features**: Enhancing the map to allow users to draw the available roof area for panel placement would provide a more accurate estimate of the possible system size and output.
 
 ## Production Considerations
 
